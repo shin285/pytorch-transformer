@@ -18,5 +18,11 @@ class Attention(nn.Module):
 
         # batch * max_length * attention_dim => batch * attention_dim * max_length
         transposed_key = torch.transpose(key, 1, 2)
-        attention = F.softmax(((query.matmul(transposed_key)) / self.attention_dim)).matmul(value)
+        attention = torch.matmul(
+            F.softmax(
+                torch.matmul(query, transposed_key) / torch.sqrt(torch.tensor(self.attention_dim)),
+                dim=-1
+            ),
+            value
+        )
         return attention

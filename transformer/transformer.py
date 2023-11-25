@@ -1,3 +1,4 @@
+import torch
 from torch import nn
 
 from transformer.encoder.transformerencoder import TransformerEncoder
@@ -15,17 +16,18 @@ class Transformer(nn.Module):
         self.encoder_text_embedding = nn.Embedding(num_embeddings=self.encoder_vocab_size,
                                                    embedding_dim=self.embedding_dim,
                                                    padding_idx=0)
-        self.decoder_text_embedding = nn.Embedding(num_embeddings=self.decoder_embedding,
+        self.decoder_text_embedding = nn.Embedding(num_embeddings=self.decoder_vocab_size,
                                                    embedding_dim=self.embedding_dim,
                                                    padding_idx=0)
 
         self.positional_embedding = nn.Embedding(num_embeddings=self.max_length, embedding_dim=self.embedding_dim)
 
-        self.position_input = [*range(self.max_length)]
+        self.position_input = torch.tensor([*range(self.max_length)])
 
         self.encoder = TransformerEncoder(self.num_head, self.embedding_dim)
         self.decoder = None
 
     def forward(self, encoder_input, decoder_input):
         encoder_embedding = self.encoder_text_embedding(encoder_input) + self.positional_embedding(self.position_input)
-        encoder_output = self.encoder(encoder_embedding)
+        encoder_output = self.encoder(encoder_embedding, encoder_embedding, encoder_embedding)
+        return encoder_output
