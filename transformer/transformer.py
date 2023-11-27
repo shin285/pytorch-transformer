@@ -27,9 +27,12 @@ class Transformer(nn.Module):
         self.encoder_layers = nn.ModuleList([
             TransformerEncoder(self.embedding_dim, self.num_head) for _ in range(num_layer)
         ])
+        self.dropout = nn.Dropout(p=0.1)
 
     def forward(self, encoder_input, decoder_input):
         encoder_embedding = self.encoder_text_embedding(encoder_input) + self.positional_embedding(self.position_input)
+        encoder_embedding = self.dropout(encoder_embedding)
+
         for encoder in self.encoder_layers:
             encoder_embedding = encoder(encoder_embedding)
         encoder_output = encoder_embedding
