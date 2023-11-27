@@ -11,11 +11,15 @@ class TransformerEncoder(nn.Module):
         self.layer_norm = nn.LayerNorm(embedding_dim)
         self.input_feed_forward = nn.Linear(embedding_dim, embedding_dim * 4)
         self.output_feed_forward = nn.Linear(embedding_dim * 4, embedding_dim)
+        self.dropout = nn.Dropout(p=0.1)
 
     def forward(self, input_embedding):
         attention = self.multi_head_attention(input_embedding)
+        attention = self.dropout(attention)
         add_layer_norm = self.layer_norm(input_embedding + attention)
+
         feed_forward_output = self.output_feed_forward(
             torch.relu(self.input_feed_forward(add_layer_norm))
         )
+        feed_forward_output = self.dropout(feed_forward_output)
         return self.layer_norm(add_layer_norm + feed_forward_output)

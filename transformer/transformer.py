@@ -1,7 +1,6 @@
 import torch
 from torch import nn
 
-from transformer.decoder.transformerdecoder import TransformerDecoder
 from transformer.encoder.transformerencoder import TransformerEncoder
 
 
@@ -28,7 +27,6 @@ class Transformer(nn.Module):
         self.encoder_layers = nn.ModuleList([
             TransformerEncoder(self.embedding_dim, self.num_head) for _ in range(num_layer)
         ])
-        self.decoder = TransformerDecoder(self.embedding_dim, self.num_head)
 
     def forward(self, encoder_input, decoder_input):
         encoder_embedding = self.encoder_text_embedding(encoder_input) + self.positional_embedding(self.position_input)
