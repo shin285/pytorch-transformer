@@ -1,17 +1,11 @@
 from torch import nn, optim
 from torch.utils.data import DataLoader
 from torchtext.data.utils import get_tokenizer
-from torchtext.datasets import multi30k, Multi30k
 
 from dataset import MultiLingualDataset
 from transformer.transformer import Transformer
 from vocabbuilder import vocab_builder
 from tqdm import tqdm
-
-multi30k.URL[
-    "train"] = "https://raw.githubusercontent.com/neychev/small_DL_repo/master/datasets/Multi30k/training.tar.gz"
-multi30k.URL[
-    "valid"] = "https://raw.githubusercontent.com/neychev/small_DL_repo/master/datasets/Multi30k/validation.tar.gz"
 
 SRC_LANGUAGE = 'de'
 TGT_LANGUAGE = 'en'
@@ -19,9 +13,19 @@ TGT_LANGUAGE = 'en'
 de_tokenizer = get_tokenizer('spacy', language='de_core_news_sm')
 en_tokenizer = get_tokenizer('spacy', language='en_core_web_sm')
 
-train_iter = Multi30k(split='train', language_pair=(SRC_LANGUAGE, TGT_LANGUAGE))
-valid_iter = Multi30k(split='valid', language_pair=(SRC_LANGUAGE, TGT_LANGUAGE))
-test_iter = Multi30k(split='valid', language_pair=(SRC_LANGUAGE, TGT_LANGUAGE))
+
+def load_data(split, source_language, target_language):
+    with open(f'data/{split}.{source_language}', 'r') as f:
+        source_sentences = [line.strip() for line in f if len(line.strip()) != 0]
+
+    with open(f'data/{split}.{target_language}', 'r') as f:
+        target_sentences = [line.strip() for line in f if len(line.strip()) != 0]
+
+    return list(zip(source_sentences, target_sentences))
+
+
+train_iter = load_data('train', 'de', 'en')
+valid_iter = load_data('val', 'de', 'en')
 
 de_vocabs, en_vocabs = vocab_builder(train_iter, de_tokenizer, en_tokenizer)
 

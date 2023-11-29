@@ -26,7 +26,7 @@ class MultiLingualDataset(Dataset):
         self.max_length = max_length
 
     def __getitem__(self, item):
-        de, en = self.multi_lingual_data.__iter__().__next__()
+        de, en = self.multi_lingual_data[item]
         de_token_ids = self.get_token_ids(de, self.de_tokenizer, self.de_vocab_to_index, self.de_unk_index)
         en_token_ids = self.get_token_ids(en, self.en_tokenizer, self.en_vocab_to_index, self.en_unk_index)
 
@@ -39,7 +39,7 @@ class MultiLingualDataset(Dataset):
         return torch.tensor(de_token_ids), torch.tensor(en_token_ids)
 
     def __len__(self):
-        return len(list(self.multi_lingual_data))
+        return len(self.multi_lingual_data)
 
     def get_token_ids(self, sentence, tokenizer, vocab_to_index, unk_index):
         tokens = tokenizer(sentence)
