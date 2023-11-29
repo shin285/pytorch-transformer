@@ -1,2 +1,6 @@
 torch
 numpy
+torchtext
+spacy
+portalocker
+tqdm

@@ -7,7 +7,8 @@ import torch.nn.functional as F
 
 
 class Transformer(nn.Module):
-    def __init__(self, encoder_vocab_size, decoder_vocab_size, max_length, num_head, embedding_dim, num_layer):
+    def __init__(self, encoder_vocab_size, decoder_vocab_size, max_length, num_head, embedding_dim, num_layer,
+                 padding_idx):
         super().__init__()
         self.encoder_vocab_size = encoder_vocab_size
         self.decoder_vocab_size = decoder_vocab_size
@@ -18,10 +19,10 @@ class Transformer(nn.Module):
 
         self.encoder_text_embedding = nn.Embedding(num_embeddings=self.encoder_vocab_size,
                                                    embedding_dim=self.embedding_dim,
-                                                   padding_idx=0)
+                                                   padding_idx=padding_idx)
         self.decoder_text_embedding = nn.Embedding(num_embeddings=self.decoder_vocab_size,
                                                    embedding_dim=self.embedding_dim,
-                                                   padding_idx=0)
+                                                   padding_idx=padding_idx)
 
         self.positional_embedding = nn.Embedding(num_embeddings=self.max_length, embedding_dim=self.embedding_dim)
         self.position_input = torch.tensor([*range(self.max_length)])
