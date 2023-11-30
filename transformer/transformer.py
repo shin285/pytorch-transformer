@@ -8,7 +8,7 @@ import torch.nn.functional as F
 
 class Transformer(nn.Module):
     def __init__(self, encoder_vocab_size, decoder_vocab_size, max_length, num_head, embedding_dim, num_layer,
-                 padding_idx):
+                 padding_idx, device):
         super().__init__()
         self.encoder_vocab_size = encoder_vocab_size
         self.decoder_vocab_size = decoder_vocab_size
@@ -16,6 +16,7 @@ class Transformer(nn.Module):
         self.num_head = num_head
         self.embedding_dim = embedding_dim
         self.num_layer = num_layer
+        self.device = device
 
         self.encoder_text_embedding = nn.Embedding(num_embeddings=self.encoder_vocab_size,
                                                    embedding_dim=self.embedding_dim,
@@ -25,14 +26,14 @@ class Transformer(nn.Module):
                                                    padding_idx=padding_idx)
 
         self.positional_embedding = nn.Embedding(num_embeddings=self.max_length, embedding_dim=self.embedding_dim)
-        self.position_input = torch.tensor([*range(self.max_length)])
+        self.position_input = torch.tensor([*range(self.max_length)]).to(self.device)
 
         self.encoder_layers = nn.ModuleList([
-            TransformerEncoder(self.embedding_dim, self.num_head) for _ in range(num_layer)
+            TransformerEncoder(self.embedding_dim, self.num_head, self.device) for _ in range(num_layer)
         ])
 
         self.decoder_layers = nn.ModuleList(
-            [TransformerDecoder(self.embedding_dim, self.num_head) for _ in range(num_layer)]
+            [TransformerDecoder(self.embedding_dim, self.num_head, self.device) for _ in range(num_layer)]
         )
 
         self.transformer_output_linear = nn.Linear(self.embedding_dim, self.decoder_vocab_size)

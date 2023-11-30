@@ -17,4 +17,7 @@ def vocab_builder(multi_lingual_data_iterator, de_tokenizer, en_tokenizer, min_f
     de_tokens = ['<PAD>', '<UNK>', '<BOS>', '<EOS>'] + sorted(de_tokens)
     en_tokens = ['<PAD>', '<UNK>', '<BOS>', '<EOS>'] + sorted(en_tokens)
 
-    return de_tokens, en_tokens
+    de_index_to_vocab = {idx: token for idx, token in enumerate(de_tokens)}
+    en_index_to_vocab = {idx: token for idx, token in enumerate(en_tokens)}
+
+    return de_tokens, en_tokens, de_index_to_vocab, en_index_to_vocab

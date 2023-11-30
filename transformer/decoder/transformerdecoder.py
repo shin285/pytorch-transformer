@@ -5,14 +5,15 @@ from transformer.attention.multiheadattention import MultiHeadAttention
 
 
 class TransformerDecoder(nn.Module):
-    def __init__(self, embedding_dim, num_head):
+    def __init__(self, embedding_dim, num_head, device):
         super().__init__()
-        self.masked_multi_head_attention = MultiHeadAttention(embedding_dim, num_head)
-        self.multi_head_attention = MultiHeadAttention(embedding_dim, num_head)
+        self.masked_multi_head_attention = MultiHeadAttention(embedding_dim, num_head, device)
+        self.multi_head_attention = MultiHeadAttention(embedding_dim, num_head, device)
         self.layer_norm = nn.LayerNorm(embedding_dim)
         self.input_feed_forward = nn.Linear(embedding_dim, embedding_dim * 4)
         self.output_feed_forward = nn.Linear(embedding_dim * 4, embedding_dim)
         self.dropout = nn.Dropout(p=0.1)
+        self.device = device
 
     def forward(self, encoder_output, decoder_embedding):
         masked_multi_head_attention_add_norm = self.__masked_multi_head_attention_sublayer(decoder_embedding)

@@ -4,12 +4,13 @@ import torch.nn.functional as F
 
 
 class ScaleDotProductAttention(nn.Module):
-    def __init__(self, embedding_dim, attention_dim):
+    def __init__(self, embedding_dim, attention_dim, device):
         super().__init__()
         self.query_weight = nn.Linear(embedding_dim, attention_dim)
         self.key_weight = nn.Linear(embedding_dim, attention_dim)
         self.value_weight = nn.Linear(embedding_dim, attention_dim)
         self.attention_dim = attention_dim
+        self.device = device
 
     def forward(self, query, key, value, look_ahead_mask=False):
         query = self.query_weight(query)
@@ -33,4 +34,4 @@ class ScaleDotProductAttention(nn.Module):
 
     def __masking(self, qk):
         seq_length = qk.size(-1)
-        return qk * torch.tril(torch.ones(seq_length, seq_length))
+        return qk * torch.tril(torch.ones(seq_length, seq_length)).to(self.device)

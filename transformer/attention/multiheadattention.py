@@ -5,14 +5,14 @@ from transformer.attention.scaledotproductattention import ScaleDotProductAttent
 
 
 class MultiHeadAttention(nn.Module):
-    def __init__(self, embedding_dim, num_head):
+    def __init__(self, embedding_dim, num_head, device):
         super().__init__()
         self.embedding_dim = embedding_dim
         self.num_head = num_head
         self.attention_dim = embedding_dim // num_head
         self.multi_head_attention = nn.ModuleList(
             [
-                ScaleDotProductAttention(self.embedding_dim, self.attention_dim) for _ in range(self.num_head)
+                ScaleDotProductAttention(self.embedding_dim, self.attention_dim, device) for _ in range(self.num_head)
             ]
         )
         self.output_linear = nn.Linear(embedding_dim, embedding_dim)

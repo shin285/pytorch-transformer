@@ -3,7 +3,7 @@ import torch
 
 
 class MultiLingualDataset(Dataset):
-    def __init__(self, multi_lingual_data, de_vocab, de_tokenizer, en_vocab, en_tokenizer, max_length):
+    def __init__(self, multi_lingual_data, de_vocab, de_tokenizer, en_vocab, en_tokenizer, max_length, device):
         super().__init__()
         self.multi_lingual_data = multi_lingual_data
         self.de_vocab = de_vocab
@@ -24,6 +24,7 @@ class MultiLingualDataset(Dataset):
         self.eos_index = self.de_vocab_to_index['<EOS>']
 
         self.max_length = max_length
+        self.device = device
 
     def __getitem__(self, item):
         de, en = self.multi_lingual_data[item]
@@ -36,7 +37,7 @@ class MultiLingualDataset(Dataset):
         de_token_ids = self.add_bos_and_eos(de_token_ids)
         en_token_ids = self.add_bos_and_eos(en_token_ids)
 
-        return torch.tensor(de_token_ids), torch.tensor(en_token_ids)
+        return torch.tensor(de_token_ids).to(self.device), torch.tensor(en_token_ids).to(self.device)
 
     def __len__(self):
         return len(self.multi_lingual_data)
@@ -52,7 +53,7 @@ class MultiLingualDataset(Dataset):
         if len(token_ids) < max_length:
             return token_ids + [pad_index] * (max_length - len(token_ids))
         else:
-            return token_ids[:max_length - 1]
+            return token_ids[:max_length]
 
     def add_bos_and_eos(self, token_ids):
         return [self.bos_index] + token_ids + [self.eos_index]
