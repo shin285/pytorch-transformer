@@ -28,8 +28,8 @@ class TransformerDecoder(nn.Module):
         return self.layer_norm(decoder_embedding + masked_multi_head_attention)
 
     def __multi_head_attention_sublayer(self, encoder_output, masked_multi_head_attention_add_norm):
-        multi_head_attention = self.multi_head_attention(encoder_output, encoder_output,
-                                                         masked_multi_head_attention_add_norm)
+        multi_head_attention = self.multi_head_attention(masked_multi_head_attention_add_norm,
+                                                         encoder_output, encoder_output)
         multi_head_attention = self.dropout(multi_head_attention)
         return self.layer_norm(masked_multi_head_attention_add_norm + multi_head_attention)
 
