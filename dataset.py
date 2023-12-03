@@ -31,11 +31,11 @@ class MultiLingualDataset(Dataset):
         de_token_ids = self.get_token_ids(de, self.de_tokenizer, self.de_vocab_to_index, self.de_unk_index)
         en_token_ids = self.get_token_ids(en, self.en_tokenizer, self.en_vocab_to_index, self.en_unk_index)
 
-        de_token_ids = self.padding(de_token_ids, self.de_pad_index, max_length=self.max_length - 2)
-        en_token_ids = self.padding(en_token_ids, self.en_pad_index, max_length=self.max_length - 1)
-
         de_token_ids = self.add_bos_and_eos(de_token_ids)
         en_token_ids = self.add_bos_and_eos(en_token_ids)
+
+        de_token_ids = self.padding(de_token_ids, self.de_pad_index, max_length=self.max_length)
+        en_token_ids = self.padding(en_token_ids, self.en_pad_index, max_length=self.max_length+1)
 
         return torch.tensor(de_token_ids).to(self.device), torch.tensor(en_token_ids).to(self.device)
 
