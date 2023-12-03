@@ -37,10 +37,10 @@ def decoding(_src, _tgt, src_itov, tgt_itov):
 
 
 def load_data(split, source_language, target_language):
-    with open(f'data/{split}.{source_language}', 'r') as f:
+    with open(f'data/{split}.{source_language}', 'r', encoding='UTF-8') as f:
         source_sentences = [line.strip() for line in f if len(line.strip()) != 0]
 
-    with open(f'data/{split}.{target_language}', 'r') as f:
+    with open(f'data/{split}.{target_language}', 'r', encoding='UTF-8') as f:
         target_sentences = [line.strip() for line in f if len(line.strip()) != 0]
 
     return list(zip(source_sentences, target_sentences))
@@ -90,7 +90,6 @@ for epoch in range(epochs):
         train_dataloader.set_description(
             f"Epoch: {epoch + 1}/{epochs}, Train loss: {losses / (step + 1):.5f}"
         )
-        break
 
     transformer.eval()
     losses = 0
@@ -106,18 +105,3 @@ for epoch in range(epochs):
         val_dataloader.set_description(
             f"Epoch: {epoch + 1}/{epochs}, Validation loss: {losses / (step + 1):.5f}"
         )
-        break
-
-# from torchtext.data.metrics import bleu_score
-# # candidate_corpus = [['My', 'full', 'pytorch'], ['Another', 'Sentence']]
-# # references_corpus = [[['My', 'full', 'pytorch', 'test'], ['Completely', 'Different']], [['No', 'Match']]]
-# candidate_corpus = [
-#     ["the", "cat", "is", "sitting", "on", "the", "mat"],
-#     ["a", "dog", "was", "running", "in", "the", "park"]
-# ]
-#
-# references_corpus = [
-#     [["the", "cat", "sits", "on", "the", "mat"], ["a", "cat", "is", "on", "the", "mat"]],
-#     [["a", "dog", "runs", "in", "the", "park"], ["dogs", "are", "running", "in", "the", "park"]]
-# ]
-# print(bleu_score(candidate_corpus, references_corpus))
