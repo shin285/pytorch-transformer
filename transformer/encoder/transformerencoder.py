@@ -13,12 +13,13 @@ class TransformerEncoder(nn.Module):
         self.output_feed_forward = nn.Linear(embedding_dim * 4, embedding_dim)
         self.dropout = nn.Dropout(p=0.1)
 
-    def forward(self, input_embedding):
-        multi_head_attention_add_norm = self.__multi_head_attention_sublayer(input_embedding)
+    def forward(self, input_embedding, encoder_padding_mask):
+        multi_head_attention_add_norm = self.__multi_head_attention_sublayer(input_embedding, encoder_padding_mask)
         return self.__feed_forward_sublayer(multi_head_attention_add_norm)
 
-    def __multi_head_attention_sublayer(self, input_embedding):
-        multi_head_attention = self.multi_head_attention(input_embedding, input_embedding, input_embedding)
+    def __multi_head_attention_sublayer(self, input_embedding, encoder_padding_mask):
+        multi_head_attention = self.multi_head_attention(input_embedding, input_embedding, input_embedding,
+                                                         padding_mask=encoder_padding_mask)
         multi_head_attention = self.dropout(multi_head_attention)
         return self.layer_norm(input_embedding + multi_head_attention)
 
