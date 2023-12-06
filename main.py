@@ -1,3 +1,6 @@
+import random
+
+import numpy as np
 import torch.cuda
 from torch import nn, optim
 from torch.utils.data import DataLoader
@@ -9,6 +12,14 @@ from vocabbuilder import vocab_builder
 from tqdm import tqdm
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
+
+seed = 42
+torch.manual_seed(seed)
+torch.cuda.manual_seed(seed)
+torch.backends.cudnn.deterministic = True
+torch.backends.cudnn.benchmark = False
+np.random.seed(seed)
+random.seed(seed)
 
 de_tokenizer = get_tokenizer('spacy', language='de_core_news_sm')
 en_tokenizer = get_tokenizer('spacy', language='en_core_web_sm')
@@ -51,14 +62,14 @@ valid_iter = load_data('val', 'de', 'en')
 
 de_vocabs, en_vocabs, de_idx_to_token, en_idx_to_token = vocab_builder(train_iter, de_tokenizer, en_tokenizer)
 
-max_length = 16
+max_length = 32
 
 train_dataset = MultiLingualDataset(train_iter, de_vocabs, de_tokenizer, en_vocabs, en_tokenizer, max_length, device)
 valid_dataset = MultiLingualDataset(valid_iter, de_vocabs, de_tokenizer, en_vocabs, en_tokenizer, max_length, device)
 
 encoder_vocab_size = len(de_vocabs)
 decoder_vocab_size = len(en_vocabs)
-batch_size = 8
+batch_size = 32
 num_head = 8
 embedding_dim = 512
 num_layer = 6
@@ -82,6 +93,11 @@ for epoch in range(epochs):
         tgt_input = tgt[:, :-1]
         tgt_output = tgt[:, 1:]
         logits = transformer(src, tgt_input)
+        # if step % 5 == 0:
+        print(src.shape)
+        print(logits.shape)
+        decoded_src, decoded_tgt = decoding(src, torch.argmax(logits, -1), de_idx_to_token, en_idx_to_token)
+        print(f"{decoded_src[0]} -> {decoded_tgt[0]}")
         optimizer.zero_grad()
         loss = criterion(logits.reshape(-1, logits.size(-1)), tgt_output.reshape(-1))
         loss.backward()
