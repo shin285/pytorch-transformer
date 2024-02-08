@@ -46,11 +46,7 @@ class Transformer(nn.Module):
         decoder_padding_mask = self.__build_padding_mask(decoder_input)
         encoder_output = self.__encoding(encoder_input, encoder_padding_mask)
         decoder_output = self.__decoding(encoder_output, encoder_padding_mask, decoder_input, decoder_padding_mask)
-        output_probability = F.softmax(
-            self.transformer_output_linear(decoder_output),
-            dim=-1
-        )
-        return output_probability
+        return self.transformer_output_linear(decoder_output)
 
     def __build_padding_mask(self, input_sequence):
         padding_mask = input_sequence.eq(self.padding_idx)
